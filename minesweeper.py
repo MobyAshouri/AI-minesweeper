@@ -1,6 +1,32 @@
 import tkinter as tk
 from random import randint
 
+############################################################################
+# Project by Maymunah Hicks & Moby Ashouri
+############################################################################
+# IMMEDIATE OBSERVATIONS
+# ChatGPT generated this code. It implements design patterns like MVC (Model-
+# View-Control), Event-Driven-Programming through buttons (without using actual
+# events, interestingly), and States. Even more minor design patterns were found.
+# I wouldn't even need to modify the code very much if I needed to add a feature.
+############################################################################
+# ISSUES
+# - You cannot place flags
+# - The game is resizable, but is not dynamic
+# - Buttons remain depressed even after a restart
+# - No game difficulty
+#
+# None of these issues can really be solved by implementing a new design
+# pattern in my opinion. These issues can all be almost entirely solved 
+# through writing more code though. I'd argue that this is a very versatile
+# piece of code from a structural perspective.
+#
+# We could modify the code to be more inline with the Open/Closed Principle
+# when including a game difficulty feature, allowing for more modification
+# in succeeding projects that utilize this code.
+############################################################################
+
+
 class Minesweeper:
     def __init__(self, master):
         self.master = master
