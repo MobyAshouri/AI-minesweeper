@@ -32,7 +32,13 @@ class Minesweeper:
     # This contructor should allow us to determine the size of the grid
     # and the number of bombs so that modifications don't have to be
     # made later on.
-    def __init__(self, master, numberOfRows=9, numberOfCols=9, numOfMines=10):
+    def __init__(self, master, numberOfRows=9, numberOfCols=9, numOfMines=10, flippedColor="#efe6d5", notFlipedColor="gray", numberColor="#9dbeb7", bombColor="#e73213"):
+        # By allowing the user to pass in the number of rows, cols, and mines
+        self._flippedColor = "#efe6d5"
+        self._notFlippedColor = "gray"
+        self._numberColor = "#9dbeb7"
+        self._bombColor = "#e73213"
+        
         self.master = master
         self.master.title("Minesweeper")
         self.rows = numberOfRows
@@ -42,8 +48,29 @@ class Minesweeper:
         self.create_widgets()
         self.create_board()
         self.place_mines()
+        
+    def placeFlag(self, row=5, col=2):
+        if self.flags:
+            if self.buttons[row][col]["text"]=="f":
+                self.buttons[row][col].config(text="")
+                self.flags+=1
+                self.flag_label["text"] = f"Flags: {self.flags}"
+            else:
+                self.buttons[row][col].config(text="f")
+                self.flags-=1
+                self.flag_label["text"] = f"Flags: {self.flags}"
+        else:
+            pass
+        
 
     def create_widgets(self):
+        ############################################################################
+        # One issue with this design is the fact that you cannot right click
+        # buttons in Tkinter to give them a different function. A button can only
+        # execute a single function. Practically, allowing a button to be right clicked
+        # to add a flag to that tile would be ideal.
+        #
+        # To do this, we would need to use a 
         self.flag_label = tk.Label(self.master, text="Flags: " + str(self.flags))
         self.flag_label.grid(row=0, column=0, columnspan=3)
         self.restart_button = tk.Button(self.master, text="Restart", command=self.restart)
@@ -51,8 +78,9 @@ class Minesweeper:
         self.buttons = [[None]*self.cols for _ in range(self.rows)]
         for i in range(self.rows):
             for j in range(self.cols):
-                self.buttons[i][j] = tk.Button(self.master, width=3, height=1, command=lambda i=i, j=j: self.reveal(i, j))
+                self.buttons[i][j] = tk.Button(self.master, width=3, height=1, background=self._notFlippedColor, command=lambda i=i, j=j: self.reveal(i, j))
                 self.buttons[i][j].grid(row=i+1, column=j)
+                self.buttons[i][j].bind("<Button-3>", lambda event, row=i, col=j: self.placeFlag(row=row, col=col))
 
     def create_board(self):
         self.board = [[0]*self.cols for _ in range(self.rows)]
@@ -70,22 +98,23 @@ class Minesweeper:
 
     def reveal(self, row, col):
         if self.board[row][col] == -1:
-            self.buttons[row][col].config(text="*", relief=tk.SUNKEN, state=tk.DISABLED)
+            self.buttons[row][col].config(text="*", relief=tk.SUNKEN, state=tk.DISABLED, background=self._bombColor)
             self.game_over()
         elif self.board[row][col] == 0:
-            self.buttons[row][col].config(relief=tk.SUNKEN, state=tk.DISABLED)
+            self.buttons[row][col].config(relief=tk.SUNKEN, state=tk.DISABLED, background=self._flippedColor)
             for i in range(row-1, row+2):
                 for j in range(col-1, col+2):
                     if 0 <= i < self.rows and 0 <= j < self.cols and self.buttons[i][j]['state'] == tk.NORMAL:
                         self.reveal(i, j)
         else:
-            self.buttons[row][col].config(text=str(self.board[row][col]), relief=tk.SUNKEN, state=tk.DISABLED)
+            self.buttons[row][col].config(text=str(self.board[row][col]), relief=tk.SUNKEN, state=tk.DISABLED, background=self._numberColor)
 
     def game_over(self):
+        self.flags=0
         for i in range(self.rows):
             for j in range(self.cols):
                 if self.board[i][j] == -1:
-                    self.buttons[i][j].config(text="*", relief=tk.SUNKEN, state=tk.DISABLED)
+                    self.buttons[i][j].config(text="X", relief=tk.SUNKEN, state=tk.DISABLED, background=self._bombColor)
                 else:
                     self.buttons[i][j].config(state=tk.DISABLED)
 
@@ -96,20 +125,10 @@ class Minesweeper:
         self.place_mines()
         for i in range(self.rows):
             for j in range(self.cols):
-                self.buttons[i][j].config(text="", state=tk.NORMAL)
-                self.master.update()    # even using the update() function on our root window doesn't work.
-                # The only REAL solution to this sort of issue is to destroy this window and
-                # completely redraw it
+                self.buttons[i][j].config(text="", state=tk.NORMAL, relief=tk.RAISED, background="gray")   # changed the relief to be RAISED after restarting
                 
                 ############################################################################
-                # The state argument is causing the button to remain depressed after a restart.
-                #
-                # The argument can be set to NORMAL, ACTIVE, or DISABLED. Setting this value
-                # to ACTIVE or DISABLED makes the game unplayable as new tiles cannot be revealed.
-                #
-                # There is no solution to this (other than redrawing the entire program's window)
-                # due to the limitaions of Tkinter. I am writing this on a windows computer, and
-                # and the bug might not even exist on a different OS.
+                # The state argument can cause the button to remain depressed after a restart.
                 #
                 # To ensure maximum OS compatibility, we could make a web app instead using
                 # JavaScript, HTML, and CSS.
