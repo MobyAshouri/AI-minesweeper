@@ -12,7 +12,7 @@ from random import randint
 ############################################################################
 # ISSUES
 # - You cannot place flags
-# - The game is resizable, but is not dynamic
+# - The game is resizable, but is not dynamically scaling
 # - Buttons remain depressed even after a restart
 # - No game difficulty
 # - There is no documentation (not the largest issue in the world)
@@ -29,12 +29,15 @@ from random import randint
 
 
 class Minesweeper:
-    def __init__(self, master):
+    # This contructor should allow us to determine the size of the grid
+    # and the number of bombs so that modifications don't have to be
+    # made later on.
+    def __init__(self, master, numberOfRows=9, numberOfCols=9, numOfMines=10):
         self.master = master
         self.master.title("Minesweeper")
-        self.rows = 9
-        self.cols = 9
-        self.num_mines = 10
+        self.rows = numberOfRows
+        self.cols = numberOfCols
+        self.num_mines = numOfMines
         self.flags = self.num_mines
         self.create_widgets()
         self.create_board()
@@ -94,9 +97,32 @@ class Minesweeper:
         for i in range(self.rows):
             for j in range(self.cols):
                 self.buttons[i][j].config(text="", state=tk.NORMAL)
+                self.master.update()    # even using the update() function on our root window doesn't work.
+                # The only REAL solution to this sort of issue is to destroy this window and
+                # completely redraw it
+                
+                ############################################################################
+                # The state argument is causing the button to remain depressed after a restart.
+                #
+                # The argument can be set to NORMAL, ACTIVE, or DISABLED. Setting this value
+                # to ACTIVE or DISABLED makes the game unplayable as new tiles cannot be revealed.
+                #
+                # There is no solution to this (other than redrawing the entire program's window)
+                # due to the limitaions of Tkinter. I am writing this on a windows computer, and
+                # and the bug might not even exist on a different OS.
+                #
+                # To ensure maximum OS compatibility, we could make a web app instead using
+                # JavaScript, HTML, and CSS.
+                ############################################################################
+                
 
 def main():
+    # Our root window is not resizeable, so we will
+    # make the window a single size. If this wasn't
+    # an assignment, I'd consider making the window
+    # rescale dynamically.
     root = tk.Tk()
+    root.resizable(False, False)
     game = Minesweeper(root)
     root.mainloop()
 
