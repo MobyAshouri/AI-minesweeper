@@ -5,7 +5,7 @@ from random import randint
 # Project by Maymunah Hicks & Moby Ashouri
 ############################################################################
 # IMMEDIATE OBSERVATIONS
-# ChatGPT generated this code. It implements design patterns like MVC (Model-
+# ChatGPT generated the original code. It implements design patterns like MVC (Model-
 # View-Control), Event-Driven-Programming through buttons (without using actual
 # events, interestingly), and States. Even more minor design patterns were found.
 # I wouldn't even need to modify the code very much if I needed to add a feature.
