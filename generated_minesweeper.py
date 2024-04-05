@@ -1,3 +1,4 @@
+# PROMPT: code minesweeper for me in python
 # CHATGPT GENERATED CODE
 import tkinter as tk
 from random import randint
