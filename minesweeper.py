@@ -15,6 +15,7 @@ from random import randint
 # - The game is resizable, but is not dynamic
 # - Buttons remain depressed even after a restart
 # - No game difficulty
+# - There is no documentation (not the largest issue in the world)
 #
 # None of these issues can really be solved by implementing a new design
 # pattern in my opinion. These issues can all be almost entirely solved 
